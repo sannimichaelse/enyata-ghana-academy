@@ -1,14 +1,14 @@
-const express = require('express') 
-const router = express.Router() 
+const express = require('express')
+const router = express.Router()
 const BookController = require('../controllers/book.controller')
-const { verifyToken } = require('../middlewares/auth.middleware')
+const BookValidator = require('../validators/book')
+const { verifyToken, verifyAdmin } = require('../middlewares/auth.middleware')
 
 
-const books = []
 
-router.get('/', verifyToken, BookController.getBooks)
+router.get('/', verifyToken, verifyAdmin, BookController.getBooks)
 
-router.post('/', verifyToken, BookController.addBook)
+router.post('/', verifyToken, BookValidator.validateNewBook, BookController.addBook)
 
 router.put('/:id', verifyToken, BookController.updateBook)
 

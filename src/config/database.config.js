@@ -17,4 +17,4 @@ const runQuery = async (query, values = []) => {
     return rows;
 };
 
-module.exports = runQuery;
+module.exports = { runQuery }

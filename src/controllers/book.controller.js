@@ -1,13 +1,18 @@
 const BookService = require('../services/book.service')
 
-const getBooks = (req, res, next) => {
-    const response = BookService.getBooks();
-    return res.status(response.code).json(response);
+const getBooks = async (req, res, next) => {
+    try {
+        const response = await BookService.getBooks();
+        return res.status(response.code).json(response);
+    } catch (error) {
+        next(error)
+    }
 }
 
 const addBook = async (req, res, next) => {
+    const { id } = req.decoded;
     try {
-        const response = await BookService.addBook(req.body);
+        const response = await BookService.addBook(req.body, id);
         return res.status(response.code).json(response);
     } catch (error) {
         next(error)

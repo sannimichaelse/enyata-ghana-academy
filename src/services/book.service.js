@@ -1,6 +1,8 @@
-const books = [];
+const { runQuery } = require('../config/database.config')
+const {findBookByTitle, addBook:addBookQuery, getAllBooks} = require('../queries/book')
 
-const getBooks = () => {
+const getBooks = async () => {
+    const books = await runQuery(getAllBooks);
     return {
         status: 'success',
         code: 200,
@@ -9,10 +11,11 @@ const getBooks = () => {
     }
 }
 
-const addBook = async (body) => {
-    const {name} = body
-    const bookExist = books.find((element) => element.name === name);
-    if (bookExist) {
+const addBook = async (body, id) => {
+    const {title, author} = body
+
+    const book = await runQuery(findBookByTitle, [title]);
+    if(book.length > 0){
         throw {
             status: 'error',
             message: 'Book already exist',
@@ -21,13 +24,14 @@ const addBook = async (body) => {
         }
     }
 
-    books.push(body)
+    const publishedAt = new Date();
+    const response = await runQuery(addBookQuery, [title, author, publishedAt, id]);
 
     return {
         status: 'success',
-        message: 'Books inserted successfully',
+        message: 'Books added successfully',
         code: 201,
-        data: books
+        data: response[0]
     }
 }
 

@@ -1,39 +1,43 @@
-const books = []
+const BookService = require('../services/book.service')
 
 const getBooks = (req, res, next) => {
-    return res.status(200).json({
-        status: 'success',
-        code: 200,
-        data: books
-    })
+    const response = BookService.getBooks();
+    return res.status(response.code).json(response);
 }
 
-const addBook = (req, res, next) => {
-    const { name } = req.body
-
-    const bookExist = books.find((element) => element.name === name);
-    if(bookExist){
-      return res.status(409).json({
-        status: 'error',
-        message: 'Book already exist',
-        code: 409,
-        data: null
-       })
+const addBook = async (req, res, next) => {
+    try {
+        const response = await BookService.addBook(req.body);
+        return res.status(response.code).json(response);
+    } catch (error) {
+        next(error)
     }
-
-    books.push(req.body)
-
-    return res.status(201).json({
-        status: 'success',
-        message: 'Books inserted successfully',
-        code: 201,
-        data: books
-    })
 }
 
+const updateBook = async (req, res, next) => {
+    const {id} = req.params;
+    try {
+        const response = await BookService.updateBook(id, req.body)
+        return res.status(response.code).json(response);
+    } catch (error) {
+        next(error)
+    }
+}
+
+const deleteBook = async (req, res, next) => {
+    const {id} = req.params;
+    try {
+        const response = await BookService.deleteBook(id)
+        return res.status(response.code).json(response);
+    } catch (error) {
+        next(error)
+    }
+}
 
 
 module.exports = {
     getBooks,
-    addBook
+    addBook,
+    updateBook,
+    deleteBook
 }

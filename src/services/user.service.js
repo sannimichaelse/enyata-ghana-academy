@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const config = require('../config/env/index')
 const {runQuery} = require('../config/database.config')
 const {findUserByEmail, addUser, getAllRoles} = require('../queries/users')
+const { makeGetRequest } = require('../util/axios.util')
 
 const findUser = async(email) => {
     const user = await runQuery(findUserByEmail, [email]);
@@ -94,10 +95,34 @@ const createUser = async (body) => {
     }
 }
 
+const getBanks = async () => {
+    const url = 'https://api.paystack.co/bank?country=ghana'
+    const response = await makeGetRequest(url);
+    return {
+        code: 200,
+        status: 'success',
+        data: response.data
+    };
+}
+
+const validateCustomer = async (body) => {
+    const { account_number, bank_code } = body;
+    const url = `https://api.paystack.co/bank/resolve?account_number=${account_number}&bank_code=${bank_code}`
+    const response = await makeGetRequest(url);
+    return {
+        code: 200,
+        status: 'success',
+        data: response.data
+    };
+}
+
+
 
 
 module.exports = {
     loginUser,
     createUser,
-    findUser
+    findUser,
+    getBanks,
+    validateCustomer
 }
